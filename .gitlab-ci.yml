@@ -1,0 +1,44 @@
+variables:
+  REGISTRY_BASE: cxyacr.azurecr.cn/aimp-cloud/gas-detect
+  IMAGE_REF: $REGISTRY_BASE:$CI_PIPELINE_ID
+  DOCKER_DRIVER: overlay2
+  DOCKER_TLS_CERTDIR: ""
+  DOCKER_HOST: tcp://localhost:2375
+
+stages:
+  - docker-build
+  - git-argocd
+
+docker-build:
+  stage: docker-build
+  image: docker:19.03.0
+  services:
+    - docker:19.03.0-dind
+  only:
+    - master@aimp-cloud/gas-detect
+  tags:
+    - arch
+  script:
+    - docker login -u cxyacr -p XDvCW+9rhZOTsGq4CjRDLNHMjIOYkSUu cxyacr.azurecr.cn
+    - docker build -t $IMAGE_REF .
+    - docker push $IMAGE_REF
+    - docker rmi $IMAGE_REF
+
+git-argocd:
+  stage: git-argocd
+  image: smartive/kustomize:kustomize-v3.8.1_kubectl-v1.18.6
+  tags:
+    - arch
+  only:
+    - master@aimp-cloud/gas-detect
+  before_script:
+    - git config --global user.name "root"
+    - git config --global user.email "dev@shaiic.com"
+  script:
+    - git clone http://root:$CI_PASSWORD@10.0.0.7:8080/aimp-arch/fat-aimp-infrastructure.git /opt/fat-aimp-infrastructure
+    - cd /opt/fat-aimp-infrastructure
+    - git pull
+    - cd /opt/fat-aimp-infrastructure/aimp-cloud/gas-detect
+    - kustomize edit set image $IMAGE_REF
+    - git commit -am 'image update'
+    - git push origin master

@@ -1,0 +1,8 @@
+resources:
+- gas-detect/deploy.yaml
+- gas-detect/service.yaml
+- mysql/configmap.yaml
+- mysql/statefulset.yaml
+- mysql/service.yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization

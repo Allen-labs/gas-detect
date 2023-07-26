@@ -1,0 +1,17 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: mysql
+  namespace: gas-detect
+data:
+  my.cnf: |
+    [client]
+      default-character-set=utf8
+      port=3306
+      
+    [mysqld]
+      socket=/var/run/mysqld/mysqld.sock
+      pid-file = /var/run/mysqld/cpep.pid
+      datadir = /var/lib/mysql
+      character-set-server=utf8
+      init_connect=SET NAMES utf8

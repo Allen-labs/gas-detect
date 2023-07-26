@@ -1,0 +1,28 @@
+trace:
+  endpoint: http://127.0.0.1:14268/api/traces
+  service_name: gas-detect
+  env: dev
+  timeout: 5
+server:
+  http:
+    addr: 0.0.0.0:8000
+    timeout: 5s
+  grpc:
+    addr: 0.0.0.0:9000
+    timeout: 5s
+data:
+  database:
+    driver: mysql
+    source: root:aimp12345@tcp(mysql.gas-detect:3306)/gas-detect?parseTime=True
+    max_idle_connections: 10
+    max_open_connections: 100
+    conn_max_life_time: 3600s
+    debug: True
+
+zap:
+  level: debug
+  format: json
+  director: ../../logs
+  encode_level: LowercaseLevelEncoder
+  stacktrace_key: trace
+  max_age: "7"

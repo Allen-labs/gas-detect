@@ -1,0 +1,75 @@
+syntax = "proto3";
+
+package api.gas;
+option go_package = "gas-detect/api/gas/gen";
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+
+service GasDetectService {
+  // Creates a Workflow
+  rpc CreateGasDetect (CreateGasDetectRequest) returns (GasDetectResponse) {
+    option (google.api.http) = {
+      post: "/api/gas-detect/create"
+      body: "body"
+    };
+  }
+
+  rpc GetGasDetect (GetGasDetectRequest) returns (GasDetectResponse) {
+    option (google.api.http) = {
+      get: "/api/gas-detect/get"
+    };
+  }
+
+  rpc DeleteGasDetect (DeleteGasDetectRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/api/gas-detect/delete"
+    };
+  }
+
+  rpc ListGasDetect (ListGasDetectRequest) returns (ListGasDetectResponse) {
+    option (google.api.http) = {
+      get: "/api/gas-detect/list"
+    };
+  }
+
+}
+
+message CreateGasDetectBody {
+  repeated Metric metrics = 1;
+}
+
+message Metric {
+  string typeName = 1;
+  string concentration= 2;
+  string analysisResult=3;
+}
+
+message CreateGasDetectRequest {
+  CreateGasDetectBody body = 1;
+}
+
+message ListGasDetectRequest {
+  int32 pageSize = 3;
+  int32 pageNo = 4;
+  string sorter = 5;
+}
+
+message ListGasDetectResponse {
+  int32 total = 1;
+  repeated GasDetectResponse content = 2;
+}
+
+message GasDetectResponse {
+  int32 id = 2;
+  string createdTime = 1;
+  repeated Metric metrics = 3;
+}
+
+message GetGasDetectRequest {
+  int32 id = 1;
+}
+
+message DeleteGasDetectRequest {
+  int32 id = 1;
+}
